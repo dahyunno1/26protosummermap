@@ -1,0 +1,177 @@
+/* ============================================
+   TOKENS
+   ============================================ */
+   :root{
+    --page:      #000000;   /* 페이지 배경 */
+    --bg:        #000000;   /* 지도 판의 바탕 */
+    --dot:       #ffffff;   /* 점 */
+  
+    /* 지도 색 — 각 색은 같은 계열의 두 톤을 오간다 */
+    --red:       #ff0059;   --red-2:    #ff7192;
+    --mint:      #7fe8c4;   --mint-2:   #45c9a0;
+    --yellow:    #f6ef4a;   --yellow-2: #ffcf2e;
+    --brown:     #4f423c;   --brown-2:  #857065;
+  
+    /* 라벨 */
+    --label:     #b6ff5c;   /* 커서에 반응해 드러나는 이름 */
+    --label-fix-bg:  #ffffff;
+    --label-fix-ink: #000000;
+  
+    --cell:      52px;   /* 한 칸의 간격 — JS가 화면에 맞춰 덮어쓴다 */
+    --dot-scale: 0.82;   /* 칸 대비 점의 지름 비율 (1에 가까울수록 빽빽) */
+  
+    --stage-margin: 10vh; /* 지도 위아래 여백 — 이후 UI 가 들어갈 자리 */
+  }
+  
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  
+  html, body{ height:100%; }
+  
+  body{
+    background:var(--page);
+    font-family:'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    overflow:hidden;
+  }
+  
+  /* ============================================
+     STAGE — 지도 판
+     위아래 여백을 남기고, 확대된 지도가 넘치지 않도록 잘라낸다.
+     ============================================ */
+  .stage{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    background:var(--bg);
+    overflow:hidden;
+    cursor:grab;
+  }
+  .stage.is-panning{ cursor:grabbing; }
+  
+  /* ============================================
+     DOT FIELD
+     ============================================ */
+  .dotfield{
+    position:absolute;
+    transform-origin:0 0;   /* 확대 계산의 기준점 */
+  }
+  
+  .dot{
+    position:absolute;
+    width:calc(var(--cell) * var(--dot-scale));
+    height:calc(var(--cell) * var(--dot-scale));
+    /* 칸의 중앙에 놓이도록 남는 여백의 절반만큼 민다 */
+    margin-left:calc(var(--cell) * (1 - var(--dot-scale)) / 2);
+    margin-top:calc(var(--cell) * (1 - var(--dot-scale)) / 2);
+    border-radius:50%;
+    background:var(--dot);
+  
+    /* 커서가 가까워지면 부드럽게 커진다 */
+    transform:scale(1);
+    transition:transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change:transform;
+  
+    /* 주기와 시작 시점은 JS가 점마다 다르게 넣는다 */
+    animation-name:blink;
+    animation-timing-function:steps(1, end);   /* 중간 단계 없이 즉시 전환 */
+    animation-iteration-count:infinite;
+  }
+  
+  .dot.is-near{
+    transform:scale(1.5);
+  }
+  
+  /* 생성과 소멸의 반복 */
+  @keyframes blink{
+    0%,  50%     { background:var(--dot); }
+    50.01%, 100% { background:var(--bg); }
+  }
+  
+  /* ============================================
+     지도 색 — 같은 계열의 두 톤을 오가며 깜빡인다
+     색은 유지되지만 계속 변화하는 인상을 만든다
+     ============================================ */
+  @keyframes blink-color{
+    0%,  50%     { background:var(--c1); }
+    50.01%, 100% { background:var(--c2); }
+  }
+  
+  .is-red,
+  .is-mint,
+  .is-yellow,
+  .is-brown{
+    background:var(--c1);
+    animation-name:blink-color;
+  }
+  
+  .is-red   { --c1:var(--red);    --c2:var(--red-2);    }
+  
+  /* ============================================
+     빛나는 붉은 점
+     노란 핵에서 붉은 가장자리로 번지고,
+     핵의 크기가 계속 요동친다.
+     ============================================ */
+  .is-glow{
+    animation-name:blink-glow;
+    animation-timing-function:ease-in-out;
+    animation-direction:alternate;
+    background:radial-gradient(circle at 50% 50%,
+      var(--yellow) 0%, var(--yellow) 18%, var(--red) 78%);
+  }
+  
+  @keyframes blink-glow{
+    from{
+      background:radial-gradient(circle at 50% 50%,
+        var(--yellow) 0%, var(--yellow) 2%, var(--red) 62%);
+    }
+    to{
+      background:radial-gradient(circle at 50% 50%,
+        var(--yellow-2) 0%, var(--yellow) 44%, var(--red) 92%);
+    }
+  }
+  .is-mint  { --c1:var(--mint);   --c2:var(--mint-2);   }
+  .is-yellow{ --c1:var(--yellow); --c2:var(--yellow-2); }
+  .is-brown { --c1:var(--brown);  --c2:var(--brown-2);  }
+  
+  /* ============================================
+     LABEL
+     ============================================ */
+  .label{
+    position:absolute;
+    z-index:2;
+    transform:translate(-50%, -50%);
+    white-space:nowrap;
+    line-height:1.25;
+    text-align:center;
+    pointer-events:none;   /* 라벨이 커서 판정을 가로막지 않게 */
+  }
+  
+  /* 스쳐 지나가는 이름 — 커서가 다가와야 드러난다 */
+  .label--hover{
+    color:var(--label);
+    font-size:calc(var(--cell) * 0.34);
+    font-weight:500;
+    letter-spacing:-0.01em;
+    opacity:0;
+    transform:translate(-50%, -50%) scale(0.94);
+    transition:opacity 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .label--hover.is-shown{
+    opacity:1;
+    transform:translate(-50%, -50%) scale(1);
+  }
+  
+  /* 지역의 뼈대가 되는 거점 — 항상 보인다 */
+  .label--fixed{
+    z-index:3;
+    background:var(--label-fix-bg);
+    color:var(--label-fix-ink);
+    font-size:calc(var(--cell) * 0.38);
+    font-weight:700;
+    letter-spacing:-0.02em;
+    padding:0.28em 0.7em;
+  }
+  
+  @media (prefers-reduced-motion:reduce){
+    .dot{ animation:none; transition:none; }
+    .label--hover{ transition:none; }
+  }
