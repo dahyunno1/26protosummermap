@@ -3,402 +3,271 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EDITion — 지도</title>
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<title>EDITion — 전단지 편집 테스트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="paper.css">
 </head>
 <body>
 
-  <!-- 점들이 서로 녹아붙게 만드는 필터 -->
-  <svg width="0" height="0" style="position:absolute">
-    <defs>
-      <filter id="goo">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/>
-        <feColorMatrix in="b" mode="matrix"
-          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" result="g"/>
-        <feBlend in="SourceGraphic" in2="g"/>
-      </filter>
-    </defs>
-  </svg>
+<!-- 상단 고정 창 -->
+<div class="topbar">
+  <div class="tb-back" aria-label="back">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 12 H5"/><path d="M11 6 L5 12 L11 18"/>
+    </svg>
+  </div>
+  <div class="tb-title">EDITion</div>
+  <div class="tb-spacer"></div>
+  <div class="tb-file">“초고령에 대한 구속 재판, 부디 부당함과 가혹함을 거두어 주십시오!”.html</div>
+  <div class="tb-doc">
+    <svg width="26" height="30" viewBox="0 0 26 30" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linejoin="round">
+      <path d="M4 2 h11 l7 7 v18.5 a0.5 0.5 0 0 1 -0.5 0.5 H4 a0.5 0.5 0 0 1 -0.5 -0.5 V2.5 a0.5 0.5 0 0 1 0.5 -0.5 Z"/>
+      <path d="M15 2 v7 h7"/>
+    </svg>
+  </div>
+</div>
 
-  <!-- 지도 판. 위아래 여백은 나중에 다른 UI 가 들어갈 자리다. -->
-  <div class="stage" id="stage">
-    <div class="dotfield" id="dotfield"></div>
+<!-- 종이 가장자리를 거칠게 만드는 필터 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="rough">
+    <feTurbulence type="fractalNoise" baseFrequency="0.013 0.015" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="11" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
 
-    <!-- ===== 원본 지도의 UI. 편집 단계가 올라갈수록 벗겨진다. ===== -->
-    <div class="chrome">
+<canvas id="residue"></canvas>
 
-      <!-- 상단 : 필터 / 지도 유형 을 따로 끊는다 -->
-      <div class="ui-top">
-        <div class="ui-group ui-group--filters">
-          <span class="ui-cell">음식점</span>
-          <span class="ui-cell">카페</span>
-          <span class="ui-cell">팝업스토어</span>
-          <span class="ui-cell">펜션</span>
-          <span class="ui-cell">쿠폰</span>
-          <span class="ui-cell">주문</span>
-          <span class="ui-cell">편의점</span>
-          <span class="ui-cell">마트</span>
-          <span class="ui-cell">···</span>
-        </div>
-        <div class="ui-group ui-group--types">
-          <span class="ui-cell">일반지도</span>
-          <span class="ui-cell">위성지도</span>
-          <span class="ui-cell">지형지도</span>
-        </div>
-      </div>
-
-      <!-- 왼쪽 -->
-      <div class="ui-side ui-side--left">
-        <span class="ui-cell">지도 홈</span>
-        <span class="ui-cell">길찾기</span>
-        <span class="ui-cell">버스</span>
-        <span class="ui-cell">지하철</span>
-        <span class="ui-cell">기차</span>
-        <span class="ui-cell">저장</span>
-        <span class="ui-cell">더보기</span>
-      </div>
-
-      <!-- 오른쪽 -->
-      <div class="ui-side ui-side--right">
-        <span class="ui-cell">테마</span>
-        <span class="ui-cell">저장</span>
-        <span class="ui-cell">지적편집도</span>
-        <span class="ui-cell">거리뷰</span>
-        <span class="ui-cell">반경</span>
-        <span class="ui-cell">면적</span>
-        <span class="ui-cell">거리</span>
-        <span class="ui-cell">다운로드</span>
-        <span class="ui-cell">인쇄</span>
-        <span class="ui-cell">공유</span>
-      </div>
-
-      <!-- 확대 축소 -->
-      <div class="ui-zoom">
-        <span class="ui-cell">+</span>
-        <span class="ui-cell">−</span>
-      </div>
-
-      <!-- 축척 -->
-      <div class="ui-scale"><span class="ui-cell">100m</span></div>
-
-      <!-- 날씨 -->
-      <div class="ui-weather">
-        <span class="ui-cell">28°</span>
-        <span class="ui-cell">폭염 경보</span>
-      </div>
-
+<div class="keyhint">
+  <div class="keys">
+    <div class="key">▲</div>
+    <div class="krow">
+      <div class="key">◀</div>
+      <div class="key">▼</div>
+      <div class="key">▶</div>
     </div>
   </div>
+  <div class="khtext">Press the arrow keys</div>
+</div>
 
-  <!-- ===== 원본 표기. 어떤 단계에서도 사라지지 않는다. ===== -->
-  <div class="source">[네이버지도] 홍익대 부근 3km</div>
+<div class="paper" id="paper">
 
+  <div class="line t-title-sm">초고령에 대한 구속 재판,</div>
+  <div class="line t-title-lg">부디 <span class="em b">부당함</span>과 <span class="em b">가혹함</span>을 거두어 주십시오!</div>
 
-  <!-- ===== 편집 진행 게이지 ===== -->
-  <div class="editbar">
-    <span class="editbar__cap">□</span>
-    <div class="editbar__track">
-      <div class="editbar__fill" id="editfill"></div>
-    </div>
-    <span class="editbar__cap">★</span>
-  </div>
+  <div class="gap-l"></div>
+  <div class="fold"></div>
+  <div class="line t-section">1. 불구속 상태에서 재판해야 할 이유</div>
 
-  <script>
-  /* ============================================
-     지도
-     글자 한 칸 = 점 하나.
-     .  기본   b 갈색
-     r 붉은색   g 민트   y 노랑
-     R / G / Y  는 각각의 빛나는 형태
-     행의 길이는 모두 같아야 한다.
-     ============================================ */
-  var MAP = [
-    '.................................',
-    '.................................',
-    '....................r..g.........',
-    '..................rrrRrrGg.......',
-    '................rrrrRrrrrgg......',
-    '...............rrrRrrrrrrrgG.....',
-    '...............rrrrrrrRrrrr..g...',
-    '...............rRrrrrrrrrr......g',
-    '...............rrr.rrrrrRr.......',
-    '..............rr.........g.......',
-    '.............rRr.....bb...gGg....',
-    '...............rr....bbbb.ggGg...',
-    '...............rRr...bbb.gggg....',
-    '.............Rrrrr...bbb.gGg.....',
-    '..y............rrR...bbbb.g......',
-    '..yyYyy..............bbb.........',
-    '.yyYyyYy............bbbb.........',
-    '....yY...........................'
-  ];
+  <div class="gap-l"></div>
+  <div class="line t-head">성실한 수사 협조</div>
+  <div class="gap-s"></div>
+  <div class="line t-body">신천지예수교회는 50여 회 압수수색과</div>
+  <div class="line t-body">계속되는 진술조사에 적극 협조했습니다.</div>
 
-  var COLOR = { r:'red', R:'glow', g:'mint', G:'glow-mint', y:'yellow', Y:'glow-yellow', b:'brown' };
+  <div class="gap-l"></div>
+  <div class="line t-head">구속 사유 부재</div>
+  <div class="gap-s"></div>
+  <div class="line t-body">이미 합동수사본부는 충분한 증거를 확보하였습니다.</div>
+  <div class="line t-body">이에 신천지예수교회는 증거인멸이나 도주를 할 이유가 없습니다.</div>
 
-  /* ============================================
-     라벨
-     [열, 행, 표기, 고정여부]
-     열·행은 소수점 가능 (칸 사이에도 놓을 수 있다)
-     네 번째 값이 1이면 항상 보이는 거점,
-     비어 있으면 커서가 다가와야 드러난다.
-     줄바꿈은 <br> 로 넣는다.
-     ============================================ */
-  var LABELS = [
-    // ── 항상 보이는 거점 ──
-    [18.0,  5.4, '홍대입구역', 1],
-    [27.2,  5.6, '경의중앙선', 1],
-    [21.5, 11.9, '홍익대<br>서울캠퍼스', 1],
-    [27.0, 11.3, '와우산', 1],
-    [ 2.4, 14.8, '합정역', 1],
+  <div class="gap-l"></div>
+  <div class="line t-head">인권 고려 부재</div>
+  <div class="gap-s"></div>
+  <div class="line t-body">신천지예수교회 총회장님이 95세 초고령임을 고려할 때,</div>
+  <div class="line t-body">구속 상태의 재판 진행은 너무나 가혹한 처사입니다.</div>
 
-    // ── 홍대입구역 일대 ──
-    [20.0,  3.0, '올리브영'],
-    [22.2,  3.8, 'AK플라자'],
-    [18.2,  4.5, '삼성스토어'],
-    [20.2,  4.9, '롯데시네마'],
-    [16.0,  5.4, 'CGV'],
-    [23.2,  5.3, '스머프매직<br>포레스트'],
-    [15.2,  6.1, '메가박스'],
-    [17.6,  6.1, 'ABC마트'],
-    [20.2,  6.1, '니뽕내뽕'],
-    [24.7,  6.3, '문하우스'],
-    [17.6,  6.8, '카카오프렌즈'],
-    [21.5,  6.8, '교장맥주'],
-    [15.4,  7.2, 'H&M'],
-    [20.0,  7.2, '와라라훠궈'],
-    [26.2,  7.5, '라이브클럽 빵'],
-    [17.4,  7.7, '왓에버타코'],
-    [20.0,  7.7, '무한리필'],
-    [22.2,  7.7, '둥지닭볶음탕'],
-    [23.2,  8.4, '홍대준<br>게스트하우스'],
+  <div class="gap-l"></div>
+  <div class="fold"></div>
+  <div class="line t-section">2. 수사 권한 남용 및 무혐의 건 재수사</div>
 
-    // ── 상수·서교 일대 ──
-    [14.4,  8.8, '레드로드'],
-    [14.4,  9.3, '예술실험센터'],
-    [16.8,  9.7, '케이팝스테이지'],
-    [16.4, 11.0, '수림식당 홍대점'],
-    [15.0, 12.1, '금복주류 홍대점'],
-    [15.4, 12.9, '카페 공명'],
-    [18.0, 12.9, '클럽 MODECI'],
-    [14.4, 13.7, '누리마을감자탕'],
+  <div class="gap-l"></div>
+  <div class="line t-head">수사 권한 남용</div>
+  <div class="gap-s"></div>
+  <div class="line t-body">정교유착 비리 합동수사본부가 정당법 위반 혐의로</div>
+  <div class="line t-body">신천지예수교회 총회장님과 사명자들을 구속기소함으로 해당 수사는 종료되었습니다.</div>
+  <div class="line t-body">그런데 구속 상태를 이용하여 이 사건과 무관한 수사를 이어 가고 있습니다.</div>
 
-    // ── 홍익대 캠퍼스 ──
-    [22.6, 10.8, '제1공학관K동'],
-    [24.0, 11.3, '제2공학관P동'],
-    [24.0, 12.5, '와우관L동'],
-    [22.6, 14.2, '인문사회관A동'],
-    [22.2, 15.7, '인문사회관D동'],
+  <div class="gap-l"></div>
+  <div class="fold"></div>
+  <div class="line t-cta">‘과도한 구속 수사’ 과연 그 진실은?</div>
+  <div class="line t-cta">‘HMBC 채널’ 영상에서 확인해보세요</div>
 
-    // ── 합정 일대 ──
-    [ 3.2, 10.0, '지호한방삼계탕'],
-    [ 2.4, 10.8, '합정동 주민센터'],
-    [ 3.6, 11.7, '홈플러스'],
-    [ 1.6, 12.3, '딜라이트<br>스퀘어 2차'],
-    [ 3.4, 12.9, '올리브영'],
-    [ 1.6, 13.9, '토후 합정본점'],
-    [ 7.4, 13.7, '조연탄 합정점'],
-    [ 9.0, 14.6, '오마주'],
-    [ 1.6, 15.3, '신한은행'],
-    [ 7.6, 15.7, '김숙성 합정점'],
-    [ 4.2, 15.8, '투썸플레이스'],
-    [ 6.6, 16.6, '신협'],
-    [ 2.6, 17.1, '파리바게트']
-  ];
+</div>
 
-  (function () {
-    var stage = document.getElementById('stage');
-    var field = document.getElementById('dotfield');
-    var rows = MAP.length;
-    var cols = MAP[0].length;
-    var dots = [];
-    var labels = [];   // { el, x, y } — 근접 판정에 쓸 좌표를 함께 보관
+<script>
+  /* ── 조절값 ───────────────────────────── */
+  const STAMP_RATIO = 0.30;
+  const MIN_STEP    = 16;
+  const MAX_STEP    = 64;
+  const PAN_SPEED   = 9;
+  const PAN_RANGE   = 0.6;
+  const REWIND_RATE = 8;
 
-    function build() {
-      // 가로는 판을 가득 채우되, 위아래 여백은 남긴다
-      var sw = stage.clientWidth;
-      var sh = stage.clientHeight;
-      var margin = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--stage-margin')) / 100 * window.innerHeight;
-      var cell = Math.min(sw / cols, (sh - margin * 2) / rows);
-      document.documentElement.style.setProperty('--cell', cell + 'px');
+  /* 1) 어절 단위 토큰화 */
+  document.querySelectorAll('.line').forEach(line=>{
+    [...line.childNodes].forEach(node=>{
+      if(node.nodeType === 3){
+        const parts = node.textContent.split(/(\s+)/);
+        const frag = document.createDocumentFragment();
+        parts.forEach(p=>{
+          if(p === '') return;
+          if(/^\s+$/.test(p)){ frag.appendChild(document.createTextNode(p)); }
+          else{
+            const s = document.createElement('span');
+            s.className = 'tok'; s.textContent = p;
+            frag.appendChild(s);
+          }
+        });
+        line.replaceChild(frag, node);
+      } else if(node.nodeType === 1){
+        node.classList.add('tok');
+      }
+    });
+  });
 
-      field.style.width  = (cols * cell) + 'px';
-      field.style.height = (rows * cell) + 'px';
+  /* 2) 토큰마다 궤적 여부 / 축 / 간격 무작위 배정 */
+  const toks = [...document.querySelectorAll('.tok')].map(el=>({
+    el,
+    stamp: Math.random() < STAMP_RATIO,
+    axis : Math.random() < 0.5 ? 'v' : 'h',
+    step : MIN_STEP + Math.random()*(MAX_STEP - MIN_STEP),
+    prevTop:null, prevLeft:null
+  }));
 
-      // 판 한가운데 놓는다
-      field.style.left = ((sw - cols * cell) / 2) + 'px';
-      field.style.top  = ((sh - rows * cell) / 2) + 'px';
+  const canvas = document.getElementById('residue');
+  const ctx = canvas.getContext('2d');
+  const paper = document.getElementById('paper');
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-      var frag = document.createDocumentFragment();
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = innerWidth * dpr;
+    canvas.height = innerHeight * dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    repaint();
+  }
 
-      // ── 점 ──
-      for (var r = 0; r < rows; r++) {
-        for (var c = 0; c < cols; c++) {
-          var key = MAP[r][c];
-          var dot = document.createElement('span');
+  // 찍힌 글자 좌표만 기록하고, 화면은 매 프레임 '종이 영역'으로 마스킹해 다시 그린다
+  let stamps = [];
+  const fontCache = new WeakMap();
+  function fontOf(el){
+    let f = fontCache.get(el);
+    if(!f){ const cs=getComputedStyle(el); f=`${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; fontCache.set(el,f); }
+    return f;
+  }
+  function setInk(){
+    if('letterSpacing' in ctx) ctx.letterSpacing = '-0.11em';
+    ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillStyle='#000';
+  }
+  function drawStamp(el, x, y){
+    setInk();
+    ctx.font = fontOf(el);
+    ctx.fillText(el.textContent, x, y);
+    stamps.push({ font:fontOf(el), text:el.textContent, x, y });
+  }
+  function repaint(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    setInk();
+    for(const s of stamps){ ctx.font = s.font; ctx.fillText(s.text, s.x, s.y); }
+  }
 
-          dot.className = 'dot ' + (COLOR[key] ? 'is-' + COLOR[key] : 'is-plain');
-          dot.dataset.col = c;
-          dot.dataset.row = r;
+  resize();
+  addEventListener('resize', resize);
 
-          // 칸의 중심에 놓는다 (크기가 제각각이어도 흔들리지 않도록)
-          dot.style.left = ((c + 0.5) * cell) + 'px';
-          dot.style.top  = ((r + 0.5) * cell) + 'px';
+  /* ── 방향키 / 스페이스 ── */
+  const keys = { left:false, right:false, up:false, down:false };
+  let panX = 0, panY = 0;
+  let mode = 'draw';   // 'draw' | 'erase'
 
-          // 편집이 진행될 때 쓰일 개체별 크기값
-          dot.style.setProperty('--rand', Math.random().toFixed(3));
+  addEventListener('keydown', e=>{
+    if(e.key==='ArrowLeft'){  keys.left = true;  e.preventDefault(); }
+    if(e.key==='ArrowRight'){ keys.right = true; e.preventDefault(); }
+    if(e.key==='ArrowUp'){    keys.up = true;   if(mode==='erase') e.preventDefault(); }
+    if(e.key==='ArrowDown'){  keys.down = true; if(mode==='erase') e.preventDefault(); }
+    if(e.code==='Space' || e.key===' '){
+      e.preventDefault();
+      mode = (mode==='draw') ? 'erase' : 'draw';
+    }
+  });
+  addEventListener('keyup', e=>{
+    if(e.key==='ArrowLeft')  keys.left = false;
+    if(e.key==='ArrowRight') keys.right = false;
+    if(e.key==='ArrowUp')    keys.up = false;
+    if(e.key==='ArrowDown')  keys.down = false;
+  });
 
-          // 배경의 흰 점 중 60% 는 붓이 스치면 사라질 대상이 된다
-          if (!COLOR[key] && Math.random() < 0.6) dot.dataset.vanish = '1';
+  // 이동 방향(vx,vy) 앞쪽에 있는 글자부터 K개 지운다
+  function eraseDirectional(vx, vy, K){
+    if(!stamps.length) return;
+    K = Math.min(K, stamps.length);
+    const idx = stamps.map((s,i)=>({ i, p: s.x*vx + s.y*vy }));
+    idx.sort((a,b)=> a.p - b.p);
+    const remove = new Set();
+    for(let k=0;k<K;k++) remove.add(idx[k].i);
+    stamps = stamps.filter((_,i)=> !remove.has(i));
+    repaint();
+  }
 
-          // 모든 점이 저마다 다른 주기로 깜빡인다
-          var duration = 1.2 + Math.random() * 4.5;
-          dot.style.animationDuration = duration.toFixed(2) + 's';
-          dot.style.animationDelay = (-Math.random() * duration).toFixed(2) + 's';
+  function frame(){
+    const maxX = innerWidth * PAN_RANGE, maxY = innerHeight * PAN_RANGE;
 
-          frag.appendChild(dot);
+    if(mode==='erase'){
+      const dxk = (keys.left?1:0) - (keys.right?1:0);
+      const dyk = (keys.up?1:0)   - (keys.down?1:0);
+      if(dxk || dyk){
+        panX = Math.max(-maxX, Math.min(maxX, panX + dxk*PAN_SPEED));
+        panY = Math.max(-maxY, Math.min(maxY, panY + dyk*PAN_SPEED));
+        paper.style.transform = `translate(${panX}px, ${panY}px)`;
+        const vx = (keys.right?1:0) - (keys.left?1:0);
+        const vy = (keys.down?1:0)  - (keys.up?1:0);
+        eraseDirectional(vx, vy, REWIND_RATE);
+      }
+    } else {
+      const dxk = (keys.left?1:0) - (keys.right?1:0);
+      if(dxk){
+        panX = Math.max(-maxX, Math.min(maxX, panX + dxk*PAN_SPEED));
+        paper.style.transform = `translate(${panX}px, ${panY}px)`;
+      }
+    }
+
+    // 그리기 모드에서 궤적을 직접 남긴다
+    const vw = innerWidth, vh = innerHeight;
+    for(const t of toks){
+      const r = t.el.getBoundingClientRect();
+      const onscreen = r.bottom>-120 && r.top<vh+120 && r.right>-120 && r.left<vw+120;
+      if(!onscreen){ t.prevTop=r.top; t.prevLeft=r.left; continue; }
+
+      const curT = r.top, curL = r.left;
+      if(t.prevTop===null){ t.prevTop=curT; t.prevLeft=curL; continue; }
+
+      if(mode==='draw' && t.stamp){
+        if(t.axis === 'v'){
+          const d = curT - t.prevTop;
+          if(Math.abs(d) > 0.5){
+            const n = Math.max(1, Math.round(Math.abs(d)/t.step));
+            for(let s=0; s<=n; s++) drawStamp(t.el, curL, t.prevTop + d*(s/n));
+          }
+        } else {
+          const d = curL - t.prevLeft;
+          if(Math.abs(d) > 0.5){
+            const n = Math.max(1, Math.round(Math.abs(d)/t.step));
+            for(let s=0; s<=n; s++) drawStamp(t.el, t.prevLeft + d*(s/n), curT);
+          }
         }
       }
-
-      // ── 라벨 ──
-      labels = [];
-      for (var i = 0; i < LABELS.length; i++) {
-        var L = LABELS[i];
-        var el = document.createElement('span');
-
-        el.className = 'label' + (L[3] ? ' label--fixed' : ' label--hover');
-        el.innerHTML = L[2];
-
-        var x = (L[0] + 0.5) * cell;
-        var y = (L[1] + 0.5) * cell;
-        el.style.left = x + 'px';
-        el.style.top  = y + 'px';
-
-        frag.appendChild(el);
-        labels.push({ el: el, x: x, y: y });
-      }
-
-      field.innerHTML = '';
-      field.appendChild(frag);
-      dots = field.querySelectorAll('.dot');
+      t.prevTop = curT; t.prevLeft = curL;
     }
 
-    var timer;
-    window.addEventListener('resize', function () {
-      clearTimeout(timer);
-      timer = setTimeout(build, 150);
-    });
+    requestAnimationFrame(frame);
+  }
 
-    build();
+  /* 항상 맨 위에서 시작 */
+  if('scrollRestoration' in history){ history.scrollRestoration = 'manual'; }
+  window.scrollTo(0,0);
+  addEventListener('load', ()=> window.scrollTo(0,0));
 
-    /* ============================================
-       커서 근접 반응
-       DOT_RADIUS   : 점이 커지는 범위 (칸 단위)
-       LABEL_RADIUS : 라벨이 드러나는 범위 (칸 단위)
-       ============================================ */
-    var DOT_RADIUS = 2.2;
-    var LABEL_RADIUS = 3.0;
-
-    var scale = 1, tx = 0, ty = 0;   // 이동·확대는 쓰지 않는다
-
-    /* ============================================
-       편집 강도 — 전체
-       하단 막대를 좌우로 끌면 0 에서 3 사이를 연속으로 오간다.
-       ============================================ */
-    var fill = document.getElementById('editfill');
-    var root = document.documentElement;
-    var g = 0;   // 0 = 원본, 3 = 가장 많이 편집됨
-
-    function clamp01(v){ return Math.min(1, Math.max(0, v)); }
-
-    function applyGlobal() {
-      // 원본의 UI 는 0 → 1 구간에서 순서대로 걷힌다
-      root.style.setProperty('--chrome', clamp01(1 - g));
-
-      // 크기의 흩어짐은 1 → 3 구간에서 짙어진다
-      var late = clamp01((g - 1) / 2);
-      root.style.setProperty('--variance', (late * 1.7).toFixed(3));
-      root.style.setProperty('--dot-scale', (0.82 + late * 0.18).toFixed(3));
-
-      // 이름의 소멸은 단계로 끊어 읽는다
-      document.body.dataset.stage = Math.min(3, Math.floor(g + 0.001));
-
-      // 마지막 구간에서 점들이 서로 녹아붙는다
-      field.classList.toggle('is-fused', g > 2.4);
-
-      fill.style.width = (g / 3 * 100) + '%';
-    }
-
-    /* ============================================
-       스크롤이 편집을 진행시킨다
-       아래로 내리면 원본에서 편집본으로,
-       위로 올리면 되짚어 올라간다.
-       ============================================ */
-    stage.addEventListener('wheel', function (e) {
-      e.preventDefault();
-      g = Math.min(3, Math.max(0, g + e.deltaY * 0.00085));
-      applyGlobal();
-    }, { passive: false });
-
-    // 어디를 누르든 편집의 한 지점으로 건너뛴다
-    stage.addEventListener('click', function () {
-      g = Math.random() * 3;
-      applyGlobal();
-    });
-
-    applyGlobal();
-
-    /* ============================================
-       편집 강도 — 부분
-       커서가 스친 자리의 점과 이름은 그 자리에서 편집된다.
-       한 번 편집된 것은 되돌아오지 않는다.
-       ============================================ */
-    var BRUSH = 1.6;    // 붓의 반경 (칸 단위)
-    var GAIN  = 0.16;   // 한 번 스칠 때 편집되는 정도
-
-    field.addEventListener('mousemove', function (e) {
-
-      var box = field.getBoundingClientRect();
-      var cell = parseFloat(getComputedStyle(root).getPropertyValue('--cell'));
-      var mx = (e.clientX - box.left) / scale;
-      var my = (e.clientY - box.top) / scale;
-      var lim = BRUSH * cell;
-
-      for (var i = 0; i < dots.length; i++) {
-        var d = dots[i];
-        var dx = (d.dataset.col * 1 + 0.5) * cell - mx;
-        var dy = (d.dataset.row * 1 + 0.5) * cell - my;
-        var dist2 = dx * dx + dy * dy;
-        if (dist2 > lim * lim) continue;
-
-        // 중심에 가까울수록 깊게 편집된다
-        var falloff = 1 - Math.sqrt(dist2) / lim;
-        var v = Math.min(1, (parseFloat(d.dataset.edit) || 0) + GAIN * falloff);
-        d.dataset.edit = v;
-        d.style.setProperty('--edit', v.toFixed(3));
-        if (v > 0.55) d.classList.add('is-edited');
-        if (v > 0.5 && d.dataset.vanish) d.classList.add('is-gone');
-      }
-
-      for (var j = 0; j < labels.length; j++) {
-        var L = labels[j];
-        var lx = L.x - mx, ly = L.y - my;
-        if (lx * lx + ly * ly < lim * lim) L.el.classList.add('is-wiped');
-      }
-    });
-
-    // 두 번 누르면 되돌린다
-    field.addEventListener('dblclick', function () {
-      for (var i = 0; i < dots.length; i++) {
-        dots[i].dataset.edit = 0;
-        dots[i].style.setProperty('--edit', 0);
-        dots[i].classList.remove('is-edited', 'is-gone');
-      }
-      for (var j = 0; j < labels.length; j++) labels[j].el.classList.remove('is-wiped');
-    });
-
-  })();
-  </script>
-
+  document.fonts.ready.then(()=> requestAnimationFrame(frame));
+</script>
 </body>
 </html>
