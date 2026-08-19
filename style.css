@@ -1,395 +1,140 @@
-/* ============================================
-   TOKENS
-   ============================================ */
-   :root{
-    --page:      #000000;   /* 페이지 배경 */
-    --bg:        #000000;   /* 지도 판의 바탕 */
-    --dot:       #ffffff;   /* 점 */
-  
-    /* 지도 색 — 각 색은 같은 계열의 두 톤을 오간다 */
-    --red:       #ff0059;   --red-2:    #ff7192;
-    --mint:      #7fe8c4;   --mint-2:   #45c9a0;
-    --yellow:    #f6ef4a;   --yellow-2: #ffcf2e;
-    --brown:     #4f423c;   --brown-2:  #857065;
-  
-    /* 라벨 */
-    --label:     #b6ff5c;   /* 커서에 반응해 드러나는 이름 */
-    --label-fix-bg:  #ffffff;
-    --label-fix-ink: #000000;
-  
-    --cell:      52px;   /* 한 칸의 간격 — JS가 화면에 맞춰 덮어쓴다 */
-    --dot-scale: 0.82;   /* 칸 대비 점의 지름 — 편집 단계가 덮어쓴다 */
-  
-    --stage-margin: 10vh; /* 지도 위아래 여백 — 이후 UI 가 들어갈 자리 */
+@font-face{
+    font-family:'SM3SSMYEONGJO';
+    src:url('./OnulSamhwamyeongjo-02.woff') format("woff");
+    font-weight:300;
+    font-style:normal;
   }
-  
-  *{ box-sizing:border-box; margin:0; padding:0; }
-  
-  html, body{ height:100%; }
-  
+
+:root{
+    --green:#308886;                 /* 리플렛 배경 초록 */
+    --paper:#eae9e2;                 /* 종이색(따뜻한 오프화이트) */
+    --ink:#1a1a1a;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ background:var(--green); overflow-x:hidden; }
   body{
-    background:var(--bg);
-    font-family:'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    overflow:hidden;
+    font-family:'SM3SSMYEONGJO', serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    letter-spacing: -0.11em;
   }
-  
-  /* ============================================
-     STAGE — 지도 판
-     위아래 여백을 남기고, 확대된 지도가 넘치지 않도록 잘라낸다.
-     ============================================ */
-  .stage{
+
+  #residue{
+    position:fixed; inset:0;
+    width:100%; height:100%;
+    pointer-events:none;
+    z-index:5;
+  }
+
+  .paper{
     position:relative;
-    width:100vw;
-    height:100vh;
-    background:var(--bg);
-    overflow:hidden;
-    cursor:grab;
-  }
-  .stage.is-panning{ cursor:grabbing; }
-  
-  /* ============================================
-     DOT FIELD
-     ============================================ */
-  .dotfield{
-    position:absolute;
-    transform-origin:0 0;   /* 확대 계산의 기준점 */
-  }
-  
-  .dot{
-    position:absolute;
-    /* 편집이 진행될수록 개체마다 크기가 흩어진다 */
-    --size:calc(var(--cell) * var(--dot-scale) *
-                (1 + (var(--rand, 0.5) - 0.5)
-                   * (var(--variance, 0) + var(--edit, 0) * 3.2)
-                   * var(--vmul, 1))
-                * (1 + var(--edit, 0) * 0.3));
-    width:var(--size);
-    height:var(--size);
-    border-radius:50%;
-    background:var(--dot);
-  
-    /* 칸의 중심을 기준으로 놓인다 */
-    transform:translate(-50%, -50%) scale(1);
-    transition:transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    width:min(1040px, 94vw);
+    margin:14vh auto 70vh;          /* 종이를 더 아래에서 시작 */
+    padding:44vh 78px 150px;        /* 헤드라인 위 여백 훨씬 넓게 */
+    background:transparent;
     will-change:transform;
-  
-    /* 주기와 시작 시점은 JS가 점마다 다르게 넣는다 */
-    animation-name:blink;
-    animation-timing-function:steps(1, end);   /* 중간 단계 없이 즉시 전환 */
-    animation-iteration-count:infinite;
   }
-  
-  .dot.is-near{
-    transform:translate(-50%, -50%) scale(1.5);
+
+  /* 종이 본체 : 결/가장자리를 텍스트 뒤 레이어에서 처리 (텍스트는 선명 유지) */
+  .paper::before{
+    content:"";
+    position:absolute; inset:-8px;
+    z-index:-2;
+    background-color:var(--paper);
+    /* 종이 결(그레인) + 가장자리 음영 */
+    background-image:
+      radial-gradient(120% 130% at 50% 50%, transparent 62%, rgba(0,0,0,.06) 100%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/></svg>");
+    box-shadow:0 14px 46px rgba(0,0,0,.28), 0 2px 8px rgba(0,0,0,.18);
+    filter:url(#rough);            /* 가장자리를 거칠게(찢긴 결) */
   }
-  
-  /* 생성과 소멸의 반복 */
-  @keyframes blink{
-    0%,  50%     { background:var(--dot); }
-    50.01%, 100% { background:var(--bg); }
-  }
-  
-  /* ============================================
-     지도 색 — 같은 계열의 두 톤을 오가며 깜빡인다
-     색은 유지되지만 계속 변화하는 인상을 만든다
-     ============================================ */
-  @keyframes blink-color{
-    0%,  50%     { background:var(--c1); }
-    50.01%, 100% { background:var(--c2); }
-  }
-  
-  .is-red,
-  .is-mint,
-  .is-yellow,
-  .is-brown{
-    background:var(--c1);
-    animation-name:blink-color;
-  }
-  
-  /* 색이 있는 점은 훨씬 크게 흔들린다 */
-  .is-red, .is-mint, .is-yellow, .is-brown,
-  .is-glow, .is-glow-mint, .is-glow-yellow{ --vmul:2.8; }
-  
-  .is-red   { --c1:var(--red);    --c2:var(--red-2);    }
-  
-  /* ============================================
-     빛나는 점
-     핵(--core)에서 테두리(--halo)로 번지고,
-     핵의 크기가 계속 요동친다.
-     색 조합만 바꾸면 어떤 색으로도 만들 수 있다.
-     ============================================ */
-  .is-glow,
-  .is-glow-mint,
-  .is-glow-yellow{
-    animation-name:blink-glow;
-    animation-timing-function:ease-in-out;
-    animation-direction:alternate;
-    background:radial-gradient(circle at 50% 50%,
-      var(--core) 0%, var(--core) 18%, var(--halo) 78%);
-  }
-  
-  .is-glow       { --core:var(--yellow); --core-2:var(--yellow-2); --halo:var(--red);    }
-  .is-glow-mint  { --core:var(--red);    --core-2:var(--red-2);    --halo:var(--mint);   }
-  .is-glow-yellow{ --core:var(--red);    --core-2:var(--red-2);    --halo:var(--yellow); }
-  
-  @keyframes blink-glow{
-    from{
-      background:radial-gradient(circle at 50% 50%,
-        var(--core) 0%, var(--core) 10%, var(--halo) 62%);
-    }
-    to{
-      background:radial-gradient(circle at 50% 50%,
-        var(--core-2) 0%, var(--core) 34%, var(--halo) 92%);
-    }
-  }
-  .is-mint  { --c1:var(--mint);   --c2:var(--mint-2);   }
-  .is-yellow{ --c1:var(--yellow); --c2:var(--yellow-2); }
-  .is-brown { --c1:var(--brown);  --c2:var(--brown-2);  }
-  
-  /* ============================================
-     LABEL
-     ============================================ */
-  .label{
-    position:absolute;
-    z-index:2;
-    transform:translate(-50%, -50%);
-    white-space:nowrap;
-    line-height:1.25;
-    text-align:center;
-    pointer-events:none;   /* 라벨이 커서 판정을 가로막지 않게 */
-  }
-  
-  /* 스쳐 지나가는 이름 — 커서가 다가와야 드러난다 */
-  .label--hover{
-    color:var(--label);
-    font-size:calc(var(--cell) * 0.34);
-    font-weight:500;
-    letter-spacing:-0.01em;
-    opacity:0;
-    /* 서서히 흐려지지 않고 몇 칸으로 끊어져 사라진다 */
-    transition:opacity 0s;
-  }
-  .label--hover.is-shown{ opacity:1; }
-  
-  /* 지역의 뼈대가 되는 거점 — 항상 보인다 */
-  .label--fixed{
-    z-index:3;
-    background:var(--label-fix-bg);
-    color:var(--label-fix-ink);
-    font-size:calc(var(--cell) * 0.38);
-    font-weight:700;
-    letter-spacing:-0.02em;
-    padding:0.28em 0.7em;
-  }
-  
-  @media (prefers-reduced-motion:reduce){
-    .dot{ animation:none; transition:none; }
-    .label--hover{ transition:none; }
-  }
-  
-  /* ============================================================
-     편집 강도
-     0 = 원본 (UI 와 모든 이름이 붙어 있다)
-     1 = 기존 웹 (UI 가 벗겨지고 이름은 호버해야 나온다)
-     2 = 이름이 거점만 남는다
-     3 = 이름이 모두 사라지고 점만 남는다
-     ============================================================ */
-  /* 연속값(--chrome, --variance, --dot-scale)은 JS 가 넣는다.
-     여기서는 이름의 소멸만 단계로 끊어 다룬다. */
-  :root{ --sat:1.1; }
-  
-  .dot{
-    filter:saturate(var(--sat, 1));
-    transition:transform 0.35s cubic-bezier(0.22,1,0.36,1),
-               width 0.6s cubic-bezier(0.22,1,0.36,1),
-               height 0.6s cubic-bezier(0.22,1,0.36,1);
-  }
-  
-  /* 0단계 — 원본이므로 모든 이름이 그냥 적혀 있다 */
-  body[data-stage="0"] .label--hover{ opacity:1; }
-  
-  /* 2단계 — 스쳐 지나가는 이름은 사라지고 거점만 남는다 */
-  body[data-stage="2"] .label--hover{ display:none; }
-  
-  /* ============================================================
-     편집의 조직감
-     2단계부터 배경의 점은 속이 빈 테두리로 바뀌고,
-     3단계에서는 서로 녹아붙어 하나의 덩어리가 된다.
-     ============================================================ */
-  body[data-stage="2"] .is-plain,
-  body[data-stage="3"] .is-plain,
-  .is-plain.is-edited{
-    animation-name:blink-ring;
-  }
-  
-  /* 붓이 스친 이름은 그 자리에서 지워지고 돌아오지 않는다 */
-  .label.is-wiped{
-    opacity:0 !important;
-    transition:opacity 0s;
-  }
-  
-  /* 붓이 스친 흰 점의 일부도 함께 사라진다 */
-  .dot.is-gone{
-    opacity:0;
-    transform:translate(-50%, -50%) scale(0.3);
-    animation:none;
+
+  /* 접힘선 : 스타일은 그대로, 위치만 각 섹션 위에 하나씩 놓는다 */
+  .fold{ position:relative; height:0; }
+  .fold::before{
+    content:"";
+    position:absolute; left:-86px; right:-86px; top:-75px;   /* 종이 폭 전체 + 섹션 위쪽 */
+    height:12px;
+    background:linear-gradient(to bottom,
+      transparent 0%, rgba(90,88,80,.15) 45%, rgba(255,255,255,.45) 62%, transparent 100%);
+    z-index:-1;
     pointer-events:none;
-    transition:opacity 0.55s ease, transform 0.55s cubic-bezier(0.22,1,0.36,1);
   }
-  
-  @keyframes blink-ring{
-    0%,  50%{
-      background:radial-gradient(circle at 50% 50%,
-        transparent 0%, transparent 62%, var(--dot) 64%, var(--dot) 100%);
-    }
-    50.01%, 100%{ background:transparent; }
-  }
-  
-  /* 색이 있는 점은 채워진 채로 남아 덩어리의 핵이 된다 */
-  .dotfield.is-fused{
-    filter:url(#goo);
-  }
-  
-  /* ============================================================
-     원본 지도의 UI
-     검은 윤곽선에 흰 바탕. 칸은 선으로만 나뉜다.
-     ============================================================ */
-  .chrome{
-    position:absolute;
-    inset:0;
-    z-index:10;
-    pointer-events:none;
-    font-size:16px;
-    letter-spacing:-0.01em;
-  }
-  
-  /* 묶음마다 사라지는 시점이 다르다.
-     --chrome 이 1 에서 0 으로 내려가는 동안
-     날씨 → 축척 → 확대 → 오른쪽 → 왼쪽 → 상단 순으로 걷힌다. */
-  .ui-weather{ opacity:clamp(0, (var(--chrome, 0) - 0.86) * 7, 1); }
-  .ui-scale  { opacity:clamp(0, (var(--chrome, 0) - 0.74) * 7, 1); }
-  .ui-zoom   { opacity:clamp(0, (var(--chrome, 0) - 0.62) * 7, 1); }
-  .ui-side--right{ opacity:clamp(0, (var(--chrome, 0) - 0.46) * 7, 1); }
-  .ui-side--left { opacity:clamp(0, (var(--chrome, 0) - 0.30) * 7, 1); }
-  .ui-top    { opacity:1; }
-  
-  .ui-cell{
-    display:flex;
-    align-items:center;
-    justify-content:center;
+
+  .line{ text-align:center; line-height:1.75; position:relative; }
+  .tok{ display:inline; }
+
+  .t-title-lg{ white-space:nowrap; }
+
+  .gap-s{ height:40px; } .gap-m{ height:80px; } .gap-l{ height:150px; }
+
+  .t-title-sm{ font-size:26px; font-weight:800; }
+  .t-title-lg{ font-size:40px; font-weight:800; }
+  .t-title-lg .em{ font-size:52px; }
+  .t-section{ font-size:25px; font-weight:700;}
+  .t-head{ font-size:25px; }
+  .t-body{ font-size:21px; color:#2a2a2a; }
+  .t-cta{ font-size:30px; font-weight:800; }
+
+  .b{ font-weight:800; }
+
+  /* ── 상단 고정 창 (파일 뷰어 크롬) ── */
+  .topbar{
+    position:fixed; top:0; left:0; right:0;
+    height:52px;
+    display:flex; align-items:stretch;
     background:#ffffff;
-    color:#000000;
-    padding:0.6em 1.1em;
-    white-space:nowrap;
+    box-shadow:0 5px 0 rgba(0,0,0,.25);   /* blur 0, 검정 25% */
+    z-index:100;                       /* 항상 맨 위 */
+    font-family:'Pretendard', system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif;
+    letter-spacing:-0.04em;
+    border-bottom: 1px solid black;
   }
-  
-  /* 가로로 이어붙인 묶음 */
-  .ui-weather{
-    position:absolute;
-    display:flex;
-    border:1.5px solid #000;
-    background:#fff;
+  .topbar .tb-back{
+    width:64px; flex:0 0 64px;
+    display:flex; align-items:center; justify-content:center;
+    border-right:1px solid #000000;
   }
-  .ui-weather > .ui-cell + .ui-cell{ border-left:1.5px solid #000; }
-  
-  /* 상단은 테두리 없는 틀. 안의 두 덩어리만 각자 상자를 갖는다. */
-  .ui-top{
-    position:absolute;
-    left:24px; right:24px; top:20px;
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
+  .topbar .tb-back svg{ stroke:#bcbcbc; }   /* 화살표 옅은 그레이 */
+  .topbar .tb-title{
+    display:flex; align-items:center;
+    padding:0 24px;
+    font-size:26px; font-weight:400; color:#1a1a1a;
+    letter-spacing:-0.03em;
   }
-  .ui-group{
-    display:flex;
-    border:1.5px solid #000;
-    background:#fff;
+  .topbar .tb-spacer{ flex:1 1 auto; min-width:12px; }
+  .topbar .tb-file{
+    display:flex; align-items:center;
+    padding:0 22px;
+    font-size:19px; font-weight:400; color:#1a1a1a;
+    letter-spacing:-0.03em;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    min-width:0;
   }
-  .ui-group > .ui-cell + .ui-cell{ border-left:1.5px solid #000; }
-  
-  /* 세로로 이어붙인 묶음 */
-  .ui-side,
-  .ui-zoom,
-  .ui-scale{
-    position:absolute;
-    display:flex;
-    flex-direction:column;
-    border:1.5px solid #000;
-    background:#fff;
+  .topbar .tb-doc{
+    width:64px; flex:0 0 64px;
+    display:flex; align-items:center; justify-content:center;
+    background:#111111;
   }
-  .ui-side > .ui-cell + .ui-cell,
-  .ui-zoom > .ui-cell + .ui-cell{ border-top:1.5px solid #000; }
-  
-  /* 배치 */
-  .ui-group--filters .ui-cell:nth-child(1){ opacity:clamp(0, (var(--chrome, 0) - 0.260) * 9, 1); }
-  .ui-group--filters .ui-cell:nth-child(2){ opacity:clamp(0, (var(--chrome, 0) - 0.236) * 9, 1); }
-  .ui-group--filters .ui-cell:nth-child(3){ opacity:clamp(0, (var(--chrome, 0) - 0.212) * 9, 1); }
-  .ui-group--filters .ui-cell:nth-child(4){ opacity:clamp(0, (var(--chrome, 0) - 0.188) * 9, 1); }
-  .ui-group--filters .ui-cell:nth-child(5){ opacity:clamp(0, (var(--chrome, 0) - 0.164) * 9, 1); }
-  .ui-group--filters .ui-cell:nth-child(6){ opacity:clamp(0, (var(--chrome, 0) - 0.140) * 9, 1); }
-  .ui-group--filters .ui-cell:nth-child(7){ opacity:clamp(0, (var(--chrome, 0) - 0.116) * 9, 1); }
-  .ui-group--filters .ui-cell:nth-child(8){ opacity:clamp(0, (var(--chrome, 0) - 0.092) * 9, 1); }
-  .ui-group--filters .ui-cell:nth-child(9){ opacity:clamp(0, (var(--chrome, 0) - 0.068) * 9, 1); }
-  .ui-group--types .ui-cell:nth-child(1){ opacity:clamp(0, (var(--chrome, 0) - 0.200) * 9, 1); }
-  .ui-group--types .ui-cell:nth-child(2){ opacity:clamp(0, (var(--chrome, 0) - 0.150) * 9, 1); }
-  .ui-group--types .ui-cell:nth-child(3){ opacity:clamp(0, (var(--chrome, 0) - 0.100) * 9, 1); }
-  .ui-group{ opacity:clamp(0, var(--chrome, 0) * 14, 1); }
-  
-  
-  .ui-group .ui-cell{ padding:0.6em 0.85em; }
-  
-  
-  .ui-side--left { left:24px;  top:110px; }
-  .ui-side--right{ right:24px; top:110px; }
-  
-  .ui-zoom { right:24px; bottom:120px; }
-  .ui-zoom .ui-cell{ padding:0.45em 0.9em; font-size:19px; }
-  
-  .ui-scale{ right:24px; bottom:26px; }
-  .ui-weather{ left:24px; bottom:26px; }
-  
-  /* ============================================================
-     편집 강도 조절 (임시)
-     ============================================================ */
-  .editbar{
-    pointer-events:none;
-    position:fixed; left:50%; bottom:24px;
-    transform:translateX(-50%);
-    z-index:40;
-    display:flex; align-items:center; gap:14px;
-    background:#000; border:1.5px solid #fff;
-    padding:10px 16px;
-    font-size:13px; color:#fff;
-    user-select:none;
-  }
-  .editbar__cap{ white-space:nowrap; font-size:15px; line-height:1; }
-  .editbar__track{
-    position:relative;
-    width:300px; height:10px;
-    border:1.5px solid #fff;
-  }
-  .editbar__fill{
-    transition:width 0.12s linear;
-    position:absolute; left:0; top:0; bottom:0;
-    width:0;
-    background:#fff;
-  }
-  
-  
-  /* ============================================================
-     원본 표기 — 어떤 단계에서도 사라지지 않는다
-     ============================================================ */
-  .source{
-    position:fixed;
-    left:50%;
-    top:20px;
-    transform:translateX(-50%);
-    z-index:50;
+
+  /* ── 방향키 안내 (고정 아님, 종이 위 초록 영역) ── */
+  .keyhint{
+    margin:120px auto 0;
+    text-align:center;
     color:#ffffff;
-    font-size:22px;
-    font-weight:600;
-    letter-spacing:-0.02em;
-    white-space:nowrap;
-    pointer-events:none;
-    padding:0.42em 0;   /* 좌우 상자와 같은 줄에 맞춘다 */
+    font-family:'Pretendard', system-ui, -apple-system, sans-serif;
+  }
+  .keyhint .keys{ display:inline-flex; flex-direction:column; align-items:center; gap:9px; }
+  .keyhint .krow{ display:flex; gap:9px; }
+  .keyhint .key{
+    width:58px; height:50px;
+    border:1.6px solid rgba(255,255,255,.85);
+    border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; color:rgba(255,255,255,.9);
+  }
+  .keyhint .khtext{
+    margin-top:18px;
+    font-size:20px; color:rgba(255,255,255,.95);
+    letter-spacing:0;
   }
