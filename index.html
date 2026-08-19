@@ -1,273 +1,902 @@
 <!DOCTYPE html>
+<!--
+  EDITion — 신문 원본의 웹 편집(시각화)
+  · 안쪽 그리드 선(칸 경계)은 스스로 크게 출렁인다. 칸 크기가 계속 재편되어
+    '이 선은 움직인다=조정 가능하다'를 강하게 드러낸다. 바깥 테두리는 고정.
+  · 커서를 올린 칸에서만 그 칸의 텍스트가 마우스를 따라 아주 살짝 밀린다.
+  · 사용자가 선을 드래그하면 목표 위치로 부드럽게(이징) 미끄러진다.
+  · 글자 폭은 초기값으로 잠겨 있어 크기가 변해도 재배치 없이 잘린다.
+-->
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EDITion — 전단지 편집 테스트</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="paper.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDITion — 2026 WBC</title>
+  <link rel="stylesheet" href="news.css">
 </head>
+
 <body>
+<div id="desk">
+<div id="paper">
 
-<!-- 상단 고정 창 -->
-<div class="topbar">
-  <div class="tb-back" aria-label="back">
-    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M20 12 H5"/><path d="M11 6 L5 12 L11 18"/>
-    </svg>
-  </div>
-  <div class="tb-title">EDITion</div>
-  <div class="tb-spacer"></div>
-  <div class="tb-file">“초고령에 대한 구속 재판, 부디 부당함과 가혹함을 거두어 주십시오!”.html</div>
-  <div class="tb-doc">
-    <svg width="26" height="30" viewBox="0 0 26 30" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linejoin="round">
-      <path d="M4 2 h11 l7 7 v18.5 a0.5 0.5 0 0 1 -0.5 0.5 H4 a0.5 0.5 0 0 1 -0.5 -0.5 V2.5 a0.5 0.5 0 0 1 0.5 -0.5 Z"/>
-      <path d="M15 2 v7 h7"/>
-    </svg>
-  </div>
+<div class="masthead">
+  2026 WBC
+  <span class="r">2026년 3월 9일 월요일 / 스포츠서울</span>
 </div>
 
-<!-- 종이 가장자리를 거칠게 만드는 필터 -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <filter id="rough">
-    <feTurbulence type="fractalNoise" baseFrequency="0.013 0.015" numOctaves="2" seed="7" result="n"/>
-    <feDisplacementMap in="SourceGraphic" in2="n" scale="11" xChannelSelector="R" yChannelSelector="G"/>
-  </filter>
-</svg>
+<div class="photo"></div>
 
-<canvas id="residue"></canvas>
+<div class="headline">
+  <h1>‘홈런 공장장’ 대신 ‘짠물 마스크’ 필요하다</h1>
+</div>
 
-<div class="keyhint">
-  <div class="keys">
-    <div class="key">▲</div>
-    <div class="krow">
-      <div class="key">◀</div>
-      <div class="key">▼</div>
-      <div class="key">▶</div>
+<!-- =====================================================
+     GRID 1
+====================================================== -->
+
+<div class="grid">
+
+  <!-- 기사1 (1-1 ~ 1-5) -->
+  <div class="row">
+
+    <div class="cell" style="flex:20 1 0">
+      <div class="t" style="font-size:20px;line-height:1.6">
+        <p>도대체 언제까지 지켜만 볼 것인가. 안방의 안정감이 뿌리째 흔들리고 있다. 8강 진출의 사활이 걸린 단판 승부에서 노출된 포수 박동원(36·LG)의 한계가 보이는 듯하다. 이제는 결단이 필요하다. 수비 안정감과 영리한 리드를 갖춘 김형준(27·NC) 카드를 써야 할 때다.</p>
+        <p>박동원이 마스크를 쓴 경기에서 우리 투수진은 결정적인 순간마다 홈런포에 무너졌다. 특히 상대의 심리와 노림수를 읽지 못한 단조로운 볼 배합은 화를 자초하는 ‘독’이 됐다.</p>
+      </div>
     </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell" style="flex:17 1 0">
+      <div class="t" style="font-size:16px;line-height:1.6">
+        <p>지난 7일 한일전이 대표적이다. 3-0으로 앞선 1회말, 고영표의 체인지업에 전혀 타이밍을 맞추지 못하던 스즈키 세이야를 상대로 풀카운트에서 굳이 몸쪽 승부를 고집하다 2점 홈런을 허용했다. 긴장한 기색이 역력했던 선발 투수를 다독이고 냉정함을 유지하게 해야 할 포수가 오히려 불에 기름을 부은 격이었다.</p>
+        <p>3회말 오타니 쇼헤이와 승부 역시 뼈아팠다. 잠수함 투수를 상대로 몸쪽과 높은 쪽만 겨냥하던 오타니에게 굳이 3구째 몸쪽 커브를 선택한 것은 ‘공식’을 무시한 처사였다. 실투성 공이었다고는 하나, 힘 있는 좌타자에게 몸쪽 느린 변화구는 홈런을 상납하는 것과 다름없다. 이어진 스즈키와 요시다 마사타카에게 허용한 백투백 홈런 역시 타자의 타이밍을 빼지 못한 ‘단조로운 변화구’ 선택이 화근이었다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell" style="flex:18 1 0">
+      <div class="t" style="font-size:24px;line-height:1.5;font-weight:700">
+        <p>박동원 단조로운 볼 배합 한계<br>승부처마다 홈런포 허용 ‘눈물’<br>김형준 내세워 실점 최소화해야</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill" style="flex:23 1 0">
+      <div class="t up" style="font-size:30px;line-height:1.4">
+        <p>국제대회는 데이터 이상의 ‘흐름’을 읽는 감각이 필요하다. 실전에서 감지되는 변수를 막고 투수를 이끌어야 할 안방마님이 수 싸움에서 밀리니 마운드 전체가 요동칠 수밖에 없다.</p>
+        <p>여기에 타격 부진까지 겹쳤다. 박동원은 이번 WBC에서 타율 0.125, OPS 0.472라는 참담한 성적을 기록 중이다. 공격형 포수라는 기대가 무색하게 승부처마다 침묵하며 공격 흐름을 끊는 주범이 됐다.</p>
+        <p>이제 남은 것은 호주전뿐이다. 호주전은 화력전보다 실점을 최소화하는 ‘짠물 야구’를 펼쳐야 한다. 여기서마저 패한다면 한국은 ‘4대회 연속 1라운드 탈락’이라는 불명예를 안고 귀국길에 올라야 한다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill" style="flex:26 1 0">
+      <div class="t" style="font-size: 24px;line-height:1.4;font-weight:500">
+        <p>류지현 감독은 ‘믿음’ 대신 ‘현실’을 봐야 한다. 수비와 투수 리드에서 이미 검증을 마친 김형준을 선발로 내세워 안방부터 재정비해야 한다. 흔들리는 안방을 그대로 방치한다면, 한국 야구의 마이애미행 꿈은 도쿄돔의 차가운 바닥에 그대로 묻히게 될 공산이 크다.</p>
+      </div>
+    </div>
+
   </div>
-  <div class="khtext">Press the arrow keys</div>
+
+  <div class="hh"><i></i></div>
+
+  <!-- 소제목 띠 -->
+  <div class="row band">
+
+    <div class="cell" style="flex:60 1 0">
+      <div class="t" style="font-size:26px;line-height:1.2;font-weight:700;white-space:nowrap;padding-top:0">
+        ‘더닝 카드’ 쓴 류지현 감독 ‘왼손’ 손주영으로 호주 넘는다
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill2 tail" style="flex:40 1 0">
+      <div class="t" style="font-size:90px;line-height:1.14;font-weight:700;white-space:nowrap;letter-spacing:-0.02em">
+        이틀 연속 일본 야구 심장부 때린 ‘대~한민국’
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hh"><i></i></div>
+
+  <!-- 기사3 -->
+  <div class="row r3">
+
+    <div class="cell fill" style="flex:16 1 0">
+      <div class="t up" style="font-size:50px;line-height:1.3;font-weight:800">
+        <p>“꼭 이겨야 했는데, 아쉽다. 그래도 아직 끝난 것은 아니다.”</p>
+        <p>대한민국 야구 대표팀이 벼랑 끝에 몰렸다. 류지현(55) 감독은 마지막 남은 실낱같은 희망을 붙잡고자 한다. 대만전 충격패의 아쉬움을 뒤로하고, 이제 조별리그 최종전인 호주전에서 기적을 바라본다.</p>
+        <p>한국 대표팀은 8일 일본 도쿄돔에서 열린 2026 월드베이스볼클래식(WBC) 1라운드 C조 3차전 대만과 맞대결에서 연장 승부치기 끝에 4-5로 무릎을 꿇었다. 이로써 대표팀은 1승2패를 기록했다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell btm" style="flex:17 1 0">
+      <div class="t" style="font-size:18px;line-height:1.6">
+        <p>경기 후 공식 인터뷰에 나선 류지현 감독의 표정은 어두웠다. 류 감독은 “반드시 잡아야 할 승부에서 마지막 고비를 넘지 못했다”면서 “결과가 좋지 않아 팬들에게 죄송한 마음이 크다”고 소회를 밝혔다. 이어 “아직 경기가 남아있다. 모든 가능성을 열어두고 호주전을 준비하겠다”며 필승 의지를 다졌다.</p>
+        <p>애초 호주전 선발이 유력했던 ‘빅리거’ 데인 더닝(시애틀)을 대만전 세 번째 투수로 투입했다. 이유가 있었을까. 류 감독은 “류현진과 곽빈, 그리고 더닝까지 이어지는 투수 운용은 대만전 승리를 위해 사전에 계획된 시나리오였다”고 설명했다. 결과적으로 패하긴 했으나, 가용할 수 있는 최고의 카드를 모두 꺼내 들어 승부를 보려 했다는 얘기다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill" style="flex:19 1 0">
+      <div class="t" style="font-size:25px;line-height:1.4;font-weight:700">
+        <p>더닝 카드를 소모한 류 감독이 내놓은 호주전 선발은 ‘왼손’ 손주영(LG)이다. 지난 7일 한일전 불펜 등판해 1이닝 1삼진 무실점을 적었다. 류 감독은 “호주전 선발 투수는 손주영이다. 우리 팀에서 가장 컨디션이 좋은 투수 중 하나인 만큼 믿고 맡기겠다”고 선언했다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill" style="flex:24 1 0">
+      <div class="t" style="font-size:30px;line-height:1.6">
+        <p>도쿄돔 수만 명의 일본, 대만 팬들이 뿜어내는 압도적인 위압감 속에서도, 목이 터져라 ‘대한민국’을 외친 우리 팬들의 열정은 승패를 떠나 아름다웠다. 이겼으면 더 좋았을 뻔했다.</p>
+        <p>7일 한일전과 8일 대만전, 류지현호의 운명이 걸린 혈투가 벌어진 일본 도쿄돔. 4만여 관중석을 가득 채운 일본-대만 유니폼 물결 사이사이로 붉은색 태극 마크와 한국 선수들의 이름이 새겨진 유니폼들이 선명하게 빛났다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell" style="flex:24 1 0">
+      <div class="t" style="font-size:18px;line-height:1.6">
+        <p>응원 방식도 한마음이다. KBO리그에서 응원하는 팀과 선수들의 응원가가 다르지만, 이날 만큼은 선수 개인의 응원가 구절을 ‘대한민국’으로 바꿔 부르며 한목소리를 냈다. 비록 대표팀이 승리로 보답하지는 못했다. 그래도 벼랑 끝 승부에서 선수들이 마지막까지 포기하지 않았던 것은 이들의 ‘진심’ 어린 응원 덕분이라고 해도 과언이 아니다.</p>
+        <p>특히 여러 팬 중, 수원에서 온 김준수 씨는 스포츠서울과 인터뷰에서 “지난 아시아 프로야구 챔피언십(APBC) 때부터 도쿄돔을 계속 찾아와 응원했다. 져서 아쉽지만, 그래도 최선을 다해 뛰어준 선수들에게 박수를 보낸다”고 말했다.</p>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<div class="paper" id="paper">
+<br>
 
-  <div class="line t-title-sm">초고령에 대한 구속 재판,</div>
-  <div class="line t-title-lg">부디 <span class="em b">부당함</span>과 <span class="em b">가혹함</span>을 거두어 주십시오!</div>
+<!-- =====================================================
+     GRID 2
+====================================================== -->
 
-  <div class="gap-l"></div>
-  <div class="fold"></div>
-  <div class="line t-section">1. 불구속 상태에서 재판해야 할 이유</div>
+<div class="grid">
 
-  <div class="gap-l"></div>
-  <div class="line t-head">성실한 수사 협조</div>
-  <div class="gap-s"></div>
-  <div class="line t-body">신천지예수교회는 50여 회 압수수색과</div>
-  <div class="line t-body">계속되는 진술조사에 적극 협조했습니다.</div>
+  <div class="row">
 
-  <div class="gap-l"></div>
-  <div class="line t-head">구속 사유 부재</div>
-  <div class="gap-s"></div>
-  <div class="line t-body">이미 합동수사본부는 충분한 증거를 확보하였습니다.</div>
-  <div class="line t-body">이에 신천지예수교회는 증거인멸이나 도주를 할 이유가 없습니다.</div>
+    <div class="cell" style="flex:20 1 0">
+      <div class="t" style="font-size:20px;line-height:1.6">
+        <p>도대체 언제까지 지켜만 볼 것인가. 안방의 안정감이 뿌리째 흔들리고 있다. 8강 진출의 사활이 걸린 단판 승부에서 노출된 포수 박동원(36·LG)의 한계가 보이는 듯하다. 이제는 결단이 필요하다. 수비 안정감과 영리한 리드를 갖춘 김형준(27·NC) 카드를 써야 할 때다.</p>
+        <p>박동원이 마스크를 쓴 경기에서 우리 투수진은 결정적인 순간마다 홈런포에 무너졌다. 특히 상대의 심리와 노림수를 읽지 못한 단조로운 볼 배합은 화를 자초하는 ‘독’이 됐다.</p>
+      </div>
+    </div>
 
-  <div class="gap-l"></div>
-  <div class="line t-head">인권 고려 부재</div>
-  <div class="gap-s"></div>
-  <div class="line t-body">신천지예수교회 총회장님이 95세 초고령임을 고려할 때,</div>
-  <div class="line t-body">구속 상태의 재판 진행은 너무나 가혹한 처사입니다.</div>
+    <div class="vh"><i></i></div>
 
-  <div class="gap-l"></div>
-  <div class="fold"></div>
-  <div class="line t-section">2. 수사 권한 남용 및 무혐의 건 재수사</div>
+    <div class="cell" style="flex:17 1 0">
+      <div class="t" style="font-size:36px;line-height:1.6">
+        <p>지난 7일 한일전이 대표적이다. 3-0으로 앞선 1회말, 고영표의 체인지업에 전혀 타이밍을 맞추지 못하던 스즈키 세이야를 상대로 풀카운트에서 굳이 몸쪽 승부를 고집하다 2점 홈런을 허용했다. 긴장한 기색이 역력했던 선발 투수를 다독이고 냉정함을 유지하게 해야 할 포수가 오히려 불에 기름을 부은 격이었다.</p>
+        <p>3회말 오타니 쇼헤이와 승부 역시 뼈아팠다. 잠수함 투수를 상대로 몸쪽과 높은 쪽만 겨냥하던 오타니에게 굳이 3구째 몸쪽 커브를 선택한 것은 ‘공식’을 무시한 처사였다. 실투성 공이었다고는 하나, 힘 있는 좌타자에게 몸쪽 느린 변화구는 홈런을 상납하는 것과 다름없다. 이어진 스즈키와 요시다 마사타카에게 허용한 백투백 홈런 역시 타자의 타이밍을 빼지 못한 ‘단조로운 변화구’ 선택이 화근이었다.</p>
+      </div>
+    </div>
 
-  <div class="gap-l"></div>
-  <div class="line t-head">수사 권한 남용</div>
-  <div class="gap-s"></div>
-  <div class="line t-body">정교유착 비리 합동수사본부가 정당법 위반 혐의로</div>
-  <div class="line t-body">신천지예수교회 총회장님과 사명자들을 구속기소함으로 해당 수사는 종료되었습니다.</div>
-  <div class="line t-body">그런데 구속 상태를 이용하여 이 사건과 무관한 수사를 이어 가고 있습니다.</div>
+    <div class="vh"><i></i></div>
 
-  <div class="gap-l"></div>
-  <div class="fold"></div>
-  <div class="line t-cta">‘과도한 구속 수사’ 과연 그 진실은?</div>
-  <div class="line t-cta">‘HMBC 채널’ 영상에서 확인해보세요</div>
+    <div class="cell" style="flex:18 1 0">
+      <div class="t" style="font-size:24px;line-height:1.5;font-weight:700">
+        <p>박동원 단조로운 볼 배합 한계<br>승부처마다 홈런포 허용 ‘눈물’<br>김형준 내세워 실점 최소화해야</p>
+      </div>
+    </div>
 
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill" style="flex:23 1 0">
+      <div class="t up" style="font-size:32px;line-height:1.4">
+        <p>국제대회는 데이터 이상의 ‘흐름’을 읽는 감각이 필요하다. 실전에서 감지되는 변수를 막고 투수를 이끌어야 할 안방마님이 수 싸움에서 밀리니 마운드 전체가 요동칠 수밖에 없다.</p>
+        <p>여기에 타격 부진까지 겹쳤다. 박동원은 이번 WBC에서 타율 0.125, OPS 0.472라는 참담한 성적을 기록 중이다. 공격형 포수라는 기대가 무색하게 승부처마다 침묵하며 공격 흐름을 끊는 주범이 됐다.</p>
+        <p>이제 남은 것은 호주전뿐이다. 호주전은 화력전보다 실점을 최소화하는 ‘짠물 야구’를 펼쳐야 한다. 여기서마저 패한다면 한국은 ‘4대회 연속 1라운드 탈락’이라는 불명예를 안고 귀국길에 올라야 한다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill" style="flex:26 1 0">
+      <div class="t" style="font-size:44px;line-height:1.4;font-weight:500">
+        <p>류지현 감독은 ‘믿음’ 대신 ‘현실’을 봐야 한다. 수비와 투수 리드에서 이미 검증을 마친 김형준을 선발로 내세워 안방부터 재정비해야 한다. 흔들리는 안방을 그대로 방치한다면, 한국 야구의 마이애미행 꿈은 도쿄돔의 차가운 바닥에 그대로 묻히게 될 공산이 크다.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hh"><i></i></div>
+
+  <div class="row band">
+
+    <div class="cell" style="flex:60 1 0">
+      <div class="t" style="font-size:60px;line-height:1.2;font-weight:700;white-space:nowrap;padding-top:0">
+        ‘더닝 카드’ 쓴 류지현 감독 ‘왼손’ 손주영으로 호주 넘는다
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill2 tail" style="flex:40 1 0">
+      <div class="t" style="font-size:45px;line-height:1.14;font-weight:700;white-space:nowrap;letter-spacing:-0.02em">
+        이틀 연속 일본 야구 심장부 때린 ‘대~한민국’
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hh"><i></i></div>
+
+  <div class="row r3">
+
+    <div class="cell fill" style="flex:16 1 0">
+      <div class="t up" style="font-size:40px;line-height:1.3;font-weight:800">
+        <p>“꼭 이겨야 했는데, 아쉽다. 그래도 아직 끝난 것은 아니다.”</p>
+        <p>대한민국 야구 대표팀이 벼랑 끝에 몰렸다. 류지현(55) 감독은 마지막 남은 실낱같은 희망을 붙잡고자 한다. 대만전 충격패의 아쉬움을 뒤로하고, 이제 조별리그 최종전인 호주전에서 기적을 바라본다.</p>
+        <p>한국 대표팀은 8일 일본 도쿄돔에서 열린 2026 월드베이스볼클래식(WBC) 1라운드 C조 3차전 대만과 맞대결에서 연장 승부치기 끝에 4-5로 무릎을 꿇었다. 이로써 대표팀은 1승2패를 기록했다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell btm" style="flex:17 1 0">
+      <div class="t" style="font-size:30px;line-height:1.6">
+        <p>경기 후 공식 인터뷰에 나선 류지현 감독의 표정은 어두웠다. 류 감독은 “반드시 잡아야 할 승부에서 마지막 고비를 넘지 못했다”면서 “결과가 좋지 않아 팬들에게 죄송한 마음이 크다”고 소회를 밝혔다. 이어 “아직 경기가 남아있다. 모든 가능성을 열어두고 호주전을 준비하겠다”며 필승 의지를 다졌다.</p>
+        <p>애초 호주전 선발이 유력했던 ‘빅리거’ 데인 더닝(시애틀)을 대만전 세 번째 투수로 투입했다. 이유가 있었을까. 류 감독은 “류현진과 곽빈, 그리고 더닝까지 이어지는 투수 운용은 대만전 승리를 위해 사전에 계획된 시나리오였다”고 설명했다. 결과적으로 패하긴 했으나, 가용할 수 있는 최고의 카드를 모두 꺼내 들어 승부를 보려 했다는 얘기다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill" style="flex:19 1 0">
+      <div class="t" style="font-size:48px;line-height:1.4;font-weight:700">
+        <p>더닝 카드를 소모한 류 감독이 내놓은 호주전 선발은 ‘왼손’ 손주영(LG)이다. 지난 7일 한일전 불펜 등판해 1이닝 1삼진 무실점을 적었다. 류 감독은 “호주전 선발 투수는 손주영이다. 우리 팀에서 가장 컨디션이 좋은 투수 중 하나인 만큼 믿고 맡기겠다”고 선언했다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill" style="flex:24 1 0">
+      <div class="t" style="font-size:32px;line-height:1.6">
+        <p>도쿄돔 수만 명의 일본, 대만 팬들이 뿜어내는 압도적인 위압감 속에서도, 목이 터져라 ‘대한민국’을 외친 우리 팬들의 열정은 승패를 떠나 아름다웠다. 이겼으면 더 좋았을 뻔했다.</p>
+        <p>7일 한일전과 8일 대만전, 류지현호의 운명이 걸린 혈투가 벌어진 일본 도쿄돔. 4만여 관중석을 가득 채운 일본-대만 유니폼 물결 사이사이로 붉은색 태극 마크와 한국 선수들의 이름이 새겨진 유니폼들이 선명하게 빛났다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell" style="flex:24 1 0">
+      <div class="t" style="font-size:40px;line-height:1.6">
+        <p>응원 방식도 한마음이다. KBO리그에서 응원하는 팀과 선수들의 응원가가 다르지만, 이날 만큼은 선수 개인의 응원가 구절을 ‘대한민국’으로 바꿔 부르며 한목소리를 냈다. 비록 대표팀이 승리로 보답하지는 못했다. 그래도 벼랑 끝 승부에서 선수들이 마지막까지 포기하지 않았던 것은 이들의 ‘진심’ 어린 응원 덕분이라고 해도 과언이 아니다.</p>
+        <p>특히 여러 팬 중, 수원에서 온 김준수 씨는 스포츠서울과 인터뷰에서 “지난 아시아 프로야구 챔피언십(APBC) 때부터 도쿄돔을 계속 찾아와 응원했다. 져서 아쉽지만, 그래도 최선을 다해 뛰어준 선수들에게 박수를 보낸다”고 말했다.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<br>
+
+<!-- =====================================================
+     GRID 3
+====================================================== -->
+
+<div class="grid">
+
+  <div class="row">
+
+    <div class="cell" style="flex:20 1 0">
+      <div class="t" style="font-size:95px;line-height:1.6">
+        <p>도대체 언제까지 지켜만 볼 것인가. 안방의 안정감이 뿌리째 흔들리고 있다. 8강 진출의 사활이 걸린 단판 승부에서 노출된 포수 박동원(36·LG)의 한계가 보이는 듯하다. 이제는 결단이 필요하다. 수비 안정감과 영리한 리드를 갖춘 김형준(27·NC) 카드를 써야 할 때다.</p>
+        <p>박동원이 마스크를 쓴 경기에서 우리 투수진은 결정적인 순간마다 홈런포에 무너졌다. 특히 상대의 심리와 노림수를 읽지 못한 단조로운 볼 배합은 화를 자초하는 ‘독’이 됐다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell" style="flex:20 1 0">
+      <div class="t" style="font-size:60px;line-height:1.6">
+        <p>지난 7일 한일전이 대표적이다. 3-0으로 앞선 1회말, 고영표의 체인지업에 전혀 타이밍을 맞추지 못하던 스즈키 세이야를 상대로 풀카운트에서 굳이 몸쪽 승부를 고집하다 2점 홈런을 허용했다. 긴장한 기색이 역력했던 선발 투수를 다독이고 냉정함을 유지하게 해야 할 포수가 오히려 불에 기름을 부은 격이었다.</p>
+        <p>3회말 오타니 쇼헤이와 승부 역시 뼈아팠다. 잠수함 투수를 상대로 몸쪽과 높은 쪽만 겨냥하던 오타니에게 굳이 3구째 몸쪽 커브를 선택한 것은 ‘공식’을 무시한 처사였다. 실투성 공이었다고는 하나, 힘 있는 좌타자에게 몸쪽 느린 변화구는 홈런을 상납하는 것과 다름없다. 이어진 스즈키와 요시다 마사타카에게 허용한 백투백 홈런 역시 타자의 타이밍을 빼지 못한 ‘단조로운 변화구’ 선택이 화근이었다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell" style="flex:18 1 0">
+      <div class="t" style="font-size:90px;line-height:1.5;font-weight:700">
+        <p>박동원 단조로운 볼 배합 한계<br>승부처마다 홈런포 허용 ‘눈물’<br>김형준 내세워 실점 최소화해야</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill" style="flex:23 1 0">
+      <div class="t up" style="font-size:85px;line-height:1.4">
+        <p>국제대회는 데이터 이상의 ‘흐름’을 읽는 감각이 필요하다. 실전에서 감지되는 변수를 막고 투수를 이끌어야 할 안방마님이 수 싸움에서 밀리니 마운드 전체가 요동칠 수밖에 없다.</p>
+        <p>여기에 타격 부진까지 겹쳤다. 박동원은 이번 WBC에서 타율 0.125, OPS 0.472라는 참담한 성적을 기록 중이다. 공격형 포수라는 기대가 무색하게 승부처마다 침묵하며 공격 흐름을 끊는 주범이 됐다.</p>
+        <p>이제 남은 것은 호주전뿐이다. 호주전은 화력전보다 실점을 최소화하는 ‘짠물 야구’를 펼쳐야 한다. 여기서마저 패한다면 한국은 ‘4대회 연속 1라운드 탈락’이라는 불명예를 안고 귀국길에 올라야 한다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill" style="flex:26 1 0">
+      <div class="t" style="font-size:40px;line-height:1.6;font-weight:500">
+        <p>류지현 감독은 ‘믿음’ 대신 ‘현실’을 봐야 한다. 수비와 투수 리드에서 이미 검증을 마친 김형준을 선발로 내세워 안방부터 재정비해야 한다. 흔들리는 안방을 그대로 방치한다면, 한국 야구의 마이애미행 꿈은 도쿄돔의 차가운 바닥에 그대로 묻히게 될 공산이 크다.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hh"><i></i></div>
+
+  <div class="row band">
+
+    <div class="cell" style="flex:60 1 0">
+      <div class="t" style="font-size:80px;line-height:1.2;font-weight:700;white-space:nowrap;padding-top:0">
+        ‘더닝 카드’ 쓴 류지현 감독 ‘왼손’ 손주영으로 호주 넘는다
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill2 tail" style="flex:40 1 0">
+      <div class="t" style="font-size:150px;line-height:1.14;font-weight:700;white-space:nowrap;letter-spacing:-0.02em">
+        이틀 연속 일본 야구 심장부 때린 ‘대~한민국’
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hh"><i></i></div>
+
+  <div class="row r3">
+
+    <div class="cell fill" style="flex:16 1 0">
+      <div class="t up" style="font-size:100px;line-height:1.3;font-weight:800">
+        <p>“꼭 이겨야 했는데, 아쉽다. 그래도 아직 끝난 것은 아니다.”</p>
+        <p>대한민국 야구 대표팀이 벼랑 끝에 몰렸다. 류지현(55) 감독은 마지막 남은 실낱같은 희망을 붙잡고자 한다. 대만전 충격패의 아쉬움을 뒤로하고, 이제 조별리그 최종전인 호주전에서 기적을 바라본다.</p>
+        <p>한국 대표팀은 8일 일본 도쿄돔에서 열린 2026 월드베이스볼클래식(WBC) 1라운드 C조 3차전 대만과 맞대결에서 연장 승부치기 끝에 4-5로 무릎을 꿇었다. 이로써 대표팀은 1승2패를 기록했다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell btm" style="flex:17 1 0">
+      <div class="t" style="font-size:80px;line-height:1.6">
+        <p>경기 후 공식 인터뷰에 나선 류지현 감독의 표정은 어두웠다. 류 감독은 “반드시 잡아야 할 승부에서 마지막 고비를 넘지 못했다”면서 “결과가 좋지 않아 팬들에게 죄송한 마음이 크다”고 소회를 밝혔다. 이어 “아직 경기가 남아있다. 모든 가능성을 열어두고 호주전을 준비하겠다”며 필승 의지를 다졌다.</p>
+        <p>애초 호주전 선발이 유력했던 ‘빅리거’ 데인 더닝(시애틀)을 대만전 세 번째 투수로 투입했다. 이유가 있었을까. 류 감독은 “류현진과 곽빈, 그리고 더닝까지 이어지는 투수 운용은 대만전 승리를 위해 사전에 계획된 시나리오였다”고 설명했다. 결과적으로 패하긴 했으나, 가용할 수 있는 최고의 카드를 모두 꺼내 들어 승부를 보려 했다는 얘기다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill" style="flex:19 1 0">
+      <div class="t" style="font-size:70px;line-height:1.4;font-weight:700">
+        <p>더닝 카드를 소모한 류 감독이 내놓은 호주전 선발은 ‘왼손’ 손주영(LG)이다. 지난 7일 한일전 불펜 등판해 1이닝 1삼진 무실점을 적었다. 류 감독은 “호주전 선발 투수는 손주영이다. 우리 팀에서 가장 컨디션이 좋은 투수 중 하나인 만큼 믿고 맡기겠다”고 선언했다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell fill" style="flex:24 1 0">
+      <div class="t" style="font-size:130px;line-height:1.6">
+        <p>도쿄돔 수만 명의 일본, 대만 팬들이 뿜어내는 압도적인 위압감 속에서도, 목이 터져라 ‘대한민국’을 외친 우리 팬들의 열정은 승패를 떠나 아름다웠다. 이겼으면 더 좋았을 뻔했다.</p>
+        <p>7일 한일전과 8일 대만전, 류지현호의 운명이 걸린 혈투가 벌어진 일본 도쿄돔. 4만여 관중석을 가득 채운 일본-대만 유니폼 물결 사이사이로 붉은색 태극 마크와 한국 선수들의 이름이 새겨진 유니폼들이 선명하게 빛났다.</p>
+      </div>
+    </div>
+
+    <div class="vh"><i></i></div>
+
+    <div class="cell" style="flex:24 1 0">
+      <div class="t" style="font-size:180px;line-height:1.6">
+        <p>응원 방식도 한마음이다. KBO리그에서 응원하는 팀과 선수들의 응원가가 다르지만, 이날 만큼은 선수 개인의 응원가 구절을 ‘대한민국’으로 바꿔 부르며 한목소리를 냈다. 비록 대표팀이 승리로 보답하지는 못했다. 그래도 벼랑 끝 승부에서 선수들이 마지막까지 포기하지 않았던 것은 이들의 ‘진심’ 어린 응원 덕분이라고 해도 과언이 아니다.</p>
+        <p>특히 여러 팬 중, 수원에서 온 김준수 씨는 스포츠서울과 인터뷰에서 “지난 아시아 프로야구 챔피언십(APBC) 때부터 도쿄돔을 계속 찾아와 응원했다. 져서 아쉽지만, 그래도 최선을 다해 뛰어준 선수들에게 박수를 보낸다”고 말했다.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div>
 </div>
 
 <script>
-  /* ── 조절값 ───────────────────────────── */
-  const STAMP_RATIO = 0.30;
-  const MIN_STEP    = 16;
-  const MAX_STEP    = 64;
-  const PAN_SPEED   = 9;
-  const PAN_RANGE   = 0.6;
-  const REWIND_RATE = 8;
+(function(){
+  /*
+   * 기존 JS의 동작은 그대로 유지하되
+   * .grid 전체를 대상으로 변경
+   */
 
-  /* 1) 어절 단위 토큰화 */
-  document.querySelectorAll('.line').forEach(line=>{
-    [...line.childNodes].forEach(node=>{
-      if(node.nodeType === 3){
-        const parts = node.textContent.split(/(\s+)/);
-        const frag = document.createDocumentFragment();
-        parts.forEach(p=>{
-          if(p === '') return;
-          if(/^\s+$/.test(p)){ frag.appendChild(document.createTextNode(p)); }
-          else{
-            const s = document.createElement('span');
-            s.className = 'tok'; s.textContent = p;
-            frag.appendChild(s);
-          }
-        });
-        line.replaceChild(frag, node);
-      } else if(node.nodeType === 1){
-        node.classList.add('tok');
-      }
-    });
-  });
+  const grids = [...document.querySelectorAll('.grid')];
+  const EASE = 0.11;
+  const AMP_X = 3.0,
+        AMP_Y = 2.2;
+  const RESUME_DELAY = 2600;
 
-  /* 2) 토큰마다 궤적 여부 / 축 / 간격 무작위 배정 */
-  const toks = [...document.querySelectorAll('.tok')].map(el=>({
-    el,
-    stamp: Math.random() < STAMP_RATIO,
-    axis : Math.random() < 0.5 ? 'v' : 'h',
-    step : MIN_STEP + Math.random()*(MAX_STEP - MIN_STEP),
-    prevTop:null, prevLeft:null
-  }));
+  let mouseX = -1,
+      mouseY = -1;
 
-  const canvas = document.getElementById('residue');
-  const ctx = canvas.getContext('2d');
-  const paper = document.getElementById('paper');
-  let dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-  function resize(){
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = innerWidth * dpr;
-    canvas.height = innerHeight * dpr;
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    repaint();
-  }
-
-  // 찍힌 글자 좌표만 기록하고, 화면은 매 프레임 '종이 영역'으로 마스킹해 다시 그린다
-  let stamps = [];
-  const fontCache = new WeakMap();
-  function fontOf(el){
-    let f = fontCache.get(el);
-    if(!f){ const cs=getComputedStyle(el); f=`${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; fontCache.set(el,f); }
-    return f;
-  }
-  function setInk(){
-    if('letterSpacing' in ctx) ctx.letterSpacing = '-0.11em';
-    ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillStyle='#000';
-  }
-  function drawStamp(el, x, y){
-    setInk();
-    ctx.font = fontOf(el);
-    ctx.fillText(el.textContent, x, y);
-    stamps.push({ font:fontOf(el), text:el.textContent, x, y });
-  }
-  function repaint(){
-    ctx.clearRect(0,0,innerWidth,innerHeight);
-    setInk();
-    for(const s of stamps){ ctx.font = s.font; ctx.fillText(s.text, s.x, s.y); }
-  }
-
-  resize();
-  addEventListener('resize', resize);
-
-  /* ── 방향키 / 스페이스 ── */
-  const keys = { left:false, right:false, up:false, down:false };
-  let panX = 0, panY = 0;
-  let mode = 'draw';   // 'draw' | 'erase'
-
-  addEventListener('keydown', e=>{
-    if(e.key==='ArrowLeft'){  keys.left = true;  e.preventDefault(); }
-    if(e.key==='ArrowRight'){ keys.right = true; e.preventDefault(); }
-    if(e.key==='ArrowUp'){    keys.up = true;   if(mode==='erase') e.preventDefault(); }
-    if(e.key==='ArrowDown'){  keys.down = true; if(mode==='erase') e.preventDefault(); }
-    if(e.code==='Space' || e.key===' '){
-      e.preventDefault();
-      mode = (mode==='draw') ? 'erase' : 'draw';
+  window.addEventListener(
+    'pointermove',
+    e=>{
+      mouseX = e.clientX;
+      mouseY = e.clientY;
     }
-  });
-  addEventListener('keyup', e=>{
-    if(e.key==='ArrowLeft')  keys.left = false;
-    if(e.key==='ArrowRight') keys.right = false;
-    if(e.key==='ArrowUp')    keys.up = false;
-    if(e.key==='ArrowDown')  keys.down = false;
-  });
+  );
 
-  // 이동 방향(vx,vy) 앞쪽에 있는 글자부터 K개 지운다
-  function eraseDirectional(vx, vy, K){
-    if(!stamps.length) return;
-    K = Math.min(K, stamps.length);
-    const idx = stamps.map((s,i)=>({ i, p: s.x*vx + s.y*vy }));
-    idx.sort((a,b)=> a.p - b.p);
-    const remove = new Set();
-    for(let k=0;k<K;k++) remove.add(idx[k].i);
-    stamps = stamps.filter((_,i)=> !remove.has(i));
-    repaint();
-  }
+  const groups = [];
+  const cellObjs = [];
 
-  function frame(){
-    const maxX = innerWidth * PAN_RANGE, maxY = innerHeight * PAN_RANGE;
+  const isHandle =
+    el =>
+      el.classList.contains('vh') ||
+      el.classList.contains('hh');
 
-    if(mode==='erase'){
-      const dxk = (keys.left?1:0) - (keys.right?1:0);
-      const dyk = (keys.up?1:0)   - (keys.down?1:0);
-      if(dxk || dyk){
-        panX = Math.max(-maxX, Math.min(maxX, panX + dxk*PAN_SPEED));
-        panY = Math.max(-maxY, Math.min(maxY, panY + dyk*PAN_SPEED));
-        paper.style.transform = `translate(${panX}px, ${panY}px)`;
-        const vx = (keys.right?1:0) - (keys.left?1:0);
-        const vy = (keys.down?1:0)  - (keys.up?1:0);
-        eraseDirectional(vx, vy, REWIND_RATE);
-      }
-    } else {
-      const dxk = (keys.left?1:0) - (keys.right?1:0);
-      if(dxk){
-        panX = Math.max(-maxX, Math.min(maxX, panX + dxk*PAN_SPEED));
-        paper.style.transform = `translate(${panX}px, ${panY}px)`;
-      }
-    }
+  function initGrid(grid){
+    grid.style.height = grid.offsetHeight + 'px';
 
-    // 그리기 모드에서 궤적을 직접 남긴다
-    const vw = innerWidth, vh = innerHeight;
-    for(const t of toks){
-      const r = t.el.getBoundingClientRect();
-      const onscreen = r.bottom>-120 && r.top<vh+120 && r.right>-120 && r.left<vw+120;
-      if(!onscreen){ t.prevTop=r.top; t.prevLeft=r.left; continue; }
+    grid
+      .querySelectorAll('.cell')
+      .forEach(c=>{
+        const t = c.querySelector('.t');
+        if(!t) return;
 
-      const curT = r.top, curL = r.left;
-      if(t.prevTop===null){ t.prevTop=curT; t.prevLeft=curL; continue; }
-
-      if(mode==='draw' && t.stamp){
-        if(t.axis === 'v'){
-          const d = curT - t.prevTop;
-          if(Math.abs(d) > 0.5){
-            const n = Math.max(1, Math.round(Math.abs(d)/t.step));
-            for(let s=0; s<=n; s++) drawStamp(t.el, curL, t.prevTop + d*(s/n));
-          }
-        } else {
-          const d = curL - t.prevLeft;
-          if(Math.abs(d) > 0.5){
-            const n = Math.max(1, Math.round(Math.abs(d)/t.step));
-            for(let s=0; s<=n; s++) drawStamp(t.el, t.prevLeft + d*(s/n), curT);
-          }
+        if(
+          getComputedStyle(t).whiteSpace
+          !== 'nowrap'
+        ){
+          t.style.width = c.clientWidth + 'px';
+          t.style.flex = 'none';
         }
-      }
-      t.prevTop = curT; t.prevLeft = curL;
-    }
 
-    requestAnimationFrame(frame);
+        const fs =
+          parseFloat(
+            getComputedStyle(t).fontSize
+          ) || 16;
+
+        cellObjs.push({
+          cell:c,
+          t:t,
+          cx:0,
+          cy:0,
+          amp:
+            Math.min(
+              11 + fs * 0.2,
+              24
+            )
+        });
+      });
+
+    buildGroup(grid,'y');
+
+    grid
+      .querySelectorAll(':scope > .row')
+      .forEach(
+        r =>
+          buildGroup(
+            r,
+            'x'
+          )
+      );
   }
 
-  /* 항상 맨 위에서 시작 */
-  if('scrollRestoration' in history){ history.scrollRestoration = 'manual'; }
-  window.scrollTo(0,0);
-  addEventListener('load', ()=> window.scrollTo(0,0));
+  function buildGroup(
+    container,
+    axis
+  ){
+    const kids = [...container.children];
 
-  document.fonts.ready.then(()=> requestAnimationFrame(frame));
+    const sz =
+      el =>
+        axis === 'x'
+          ? el.getBoundingClientRect().width
+          : el.getBoundingClientRect().height;
+
+    let gap = 0;
+
+    kids.forEach(
+      el=>{
+        if(isHandle(el))
+          gap += sz(el);
+      }
+    );
+
+    const avail =
+      (
+        axis === 'x'
+          ? container.clientWidth
+          : container.clientHeight
+      ) - gap;
+
+    const items = [];
+
+    kids.forEach(
+      el=>{
+        if(isHandle(el))
+          return;
+
+        const s = sz(el);
+
+        items.push({
+          el,
+          base:s / avail,
+          cur:s,
+          target:s,
+          min:
+            axis === 'x'
+              ? 30
+              : 44,
+          w1:
+            0.16 +
+            Math.random() * 0.24,
+          w2:
+            0.28 +
+            Math.random() * 0.34,
+          p1:
+            Math.random() * 6.283,
+          p2:
+            Math.random() * 6.283
+        });
+      }
+    );
+
+    const g = {
+      axis,
+      avail,
+      items,
+      hold:false,
+      holdUntil:0,
+      amp:
+        axis === 'x'
+          ? AMP_X
+          : AMP_Y
+    };
+
+    groups.push(g);
+
+    let idx = -1;
+
+    kids.forEach(
+      el=>{
+        if(!isHandle(el)){
+          idx++;
+          return;
+        }
+
+        wireHandle(
+          el,
+          g,
+          items[idx],
+          items[idx + 1]
+        );
+      }
+    );
+  }
+
+  function wireHandle(
+    h,
+    g,
+    prev,
+    next
+  ){
+    h.addEventListener(
+      'pointerdown',
+      e=>{
+        e.preventDefault();
+
+        h.setPointerCapture(
+          e.pointerId
+        );
+
+        document.body
+          .classList
+          .add('dragging');
+
+        g.hold = true;
+
+        g.items.forEach(
+          it =>
+            it.target = it.cur
+        );
+
+        const axis = g.axis;
+
+        const start =
+          axis === 'x'
+            ? e.clientX
+            : e.clientY;
+
+        const pS = prev.cur;
+        const nS = next.cur;
+
+        function mv(ev){
+          const cur =
+            axis === 'x'
+              ? ev.clientX
+              : ev.clientY;
+
+          let d = cur - start;
+          let np = pS + d;
+          let nn = nS - d;
+
+          if(np < prev.min){
+            np = prev.min;
+            nn = pS + nS - prev.min;
+          }
+
+          if(nn < next.min){
+            nn = next.min;
+            np = pS + nS - next.min;
+          }
+
+          prev.target = np;
+          next.target = nn;
+        }
+
+        function up(){
+          g.hold = false;
+          g.holdUntil =
+            performance.now() +
+            RESUME_DELAY;
+
+          document.body
+            .classList
+            .remove('dragging');
+
+          h.removeEventListener(
+            'pointermove',
+            mv
+          );
+
+          h.removeEventListener(
+            'pointerup',
+            up
+          );
+        }
+
+        h.addEventListener(
+          'pointermove',
+          mv
+        );
+
+        h.addEventListener(
+          'pointerup',
+          up
+        );
+      }
+    );
+  }
+
+  function retarget(
+    g,
+    t
+  ){
+    const items = g.items;
+    const avail = g.avail;
+
+    let ws =
+      items.map(
+        it=>{
+          const raw =
+            Math.sin(
+              t * it.w1 +
+              it.p1
+            )
+            +
+            0.5 *
+            Math.sin(
+              t * it.w2 +
+              it.p2
+            );
+
+          return (
+            it.base *
+            Math.pow(
+              g.amp,
+              raw / 1.5
+            )
+          );
+        }
+      );
+
+    const sum =
+      ws.reduce(
+        (a,b)=>a+b,
+        0
+      );
+
+    let w =
+      ws.map(
+        x =>
+          avail * x / sum
+      );
+
+    for(
+      let pass=0;
+      pass<4;
+      pass++
+    ){
+      let deficit = 0;
+      let freeSum = 0;
+
+      w.forEach(
+        (wd,i)=>{
+          const m = items[i].min;
+
+          if(wd < m)
+            deficit += m - wd;
+          else
+            freeSum += wd - m;
+        }
+      );
+
+      if(
+        deficit <= 0 ||
+        freeSum <= 0
+      )
+        break;
+
+      w =
+        w.map(
+          (wd,i)=>{
+            const m = items[i].min;
+
+            if(wd <= m)
+              return m;
+
+            const slack = wd - m;
+
+            return (
+              m +
+              slack -
+              deficit *
+              (slack / freeSum)
+            );
+          }
+        );
+    }
+
+    items.forEach(
+      (it,i)=>
+        it.target = w[i]
+    );
+  }
+
+  function loop(ts){
+    const t = ts / 1000;
+
+    for(
+      const g of groups
+    ){
+      if(
+        !g.hold &&
+        ts >= g.holdUntil
+      ){
+        retarget(
+          g,
+          t
+        );
+      }
+
+      for(
+        const it of g.items
+      ){
+        it.cur +=
+          (
+            it.target -
+            it.cur
+          ) * EASE;
+
+        it.el.style.flex =
+          '0 0 ' +
+          it.cur.toFixed(2) +
+          'px';
+      }
+    }
+
+    let activeCell = null;
+
+    if(mouseX >= 0){
+      const el =
+        document.elementFromPoint(
+          mouseX,
+          mouseY
+        );
+
+      activeCell =
+        el
+          ? el.closest('.cell')
+          : null;
+    }
+
+    for(
+      const c of cellObjs
+    ){
+      let tx = 0;
+      let ty = 0;
+
+      if(
+        c.cell === activeCell
+      ){
+        const r =
+          c.cell.getBoundingClientRect();
+
+        const nx =
+          (
+            mouseX -
+            r.left
+          ) /
+          r.width -
+          0.5;
+
+        const ny =
+          (
+            mouseY -
+            r.top
+          ) /
+          r.height -
+          0.5;
+
+        tx =
+          nx * c.amp;
+
+        ty =
+          ny * c.amp * 0.8;
+      }
+
+      c.cx +=
+        (tx - c.cx) *
+        0.12;
+
+      c.cy +=
+        (ty - c.cy) *
+        0.12;
+
+      c.t.style.transform =
+        'translate(' +
+        c.cx.toFixed(2) +
+        'px,' +
+        c.cy.toFixed(2) +
+        'px';
+    }
+
+    requestAnimationFrame(
+      loop
+    );
+  }
+
+  function start(){
+    grids.forEach(
+      grid =>
+        initGrid(grid)
+    );
+
+    requestAnimationFrame(
+      loop
+    );
+  }
+
+  if(
+    document.fonts &&
+    document.fonts.ready
+  ){
+    document.fonts.ready
+      .then(start);
+  }
+  else{
+    window.addEventListener(
+      'load',
+      start
+    );
+  }
+})();
 </script>
+
 </body>
 </html>
